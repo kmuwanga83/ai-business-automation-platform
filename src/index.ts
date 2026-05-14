@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import emailRoutes from './api/routes/email';
+import paymentRoutes from './api/routes/payment';
 
 dotenv.config();
 
@@ -28,15 +29,20 @@ app.post('/api/automate', async (req, res) => {
   });
 });
 
-// Email routes
+// Routes
 app.use('/api/email', emailRoutes);
+app.use('/api/payment', paymentRoutes);
+
+// Serve static files from mobile/www
+app.use(express.static('mobile/www'));
 
 // Start server
 app.listen(PORT, () => {
   console.log(`✅ Server running on http://localhost:${PORT}`);
   console.log(`📍 Health check: http://localhost:${PORT}/health`);
   console.log(`📧 Email endpoint: http://localhost:${PORT}/api/email/generate-email`);
-  console.log(`🤖 Test endpoint: http://localhost:${PORT}/api/automate`);
+  console.log(`💰 Payment plans: http://localhost:${PORT}/api/payment/plans`);
+  console.log(`💳 Payment UI: http://localhost:${PORT}/payment.html`);
 });
 
 export default app;
