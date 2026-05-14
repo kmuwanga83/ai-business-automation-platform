@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Email Generator</title>
+    <style>
+        body {
+            font-family: system-ui;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background: #5a67d8;
+        }
+        textarea, select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            white-space: pre-wrap;
+        }
+        .loading {
+            display: none;
+            color: #667eea;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🤖 Test Email Generator</h1>
+        
+        <label>Campaign Type:</label>
+        <select id="campaign">
+            <option>Product Launch</option>
+            <option>Newsletter</option>
+            <option>Customer Follow-up</option>
+            <option>Sale Promotion</option>
+        </select>
+        
+        <label>Target Audience:</label>
+        <select id="audience">
+            <option>Small Business Owners</option>
+            <option>Enterprise Clients</option>
+            <option>Existing Customers</option>
+            <option>New Leads</option>
+        </select>
+        
+        <label>Tone:</label>
+        <select id="tone">
+            <option>professional</option>
+            <option>casual</option>
+            <option>persuasive</option>
+        </select>
+        
+        <button onclick="generateEmail()">✨ Generate Email ✨</button>
+        
+        <div class="loading" id="loading">Generating... Please wait</div>
+        <div class="result" id="result"></div>
+    </div>
+    
+    <script>
+        async function generateEmail() {
+            const campaign = document.getElementById('campaign').value;
+            const audience = document.getElementById('audience').value;
+            const tone = document.getElementById('tone').value;
+            
+            const resultDiv = document.getElementById('result');
+            const loadingDiv = document.getElementById('loading');
+            
+            loadingDiv.style.display = 'block';
+            resultDiv.innerHTML = '';
+            
+            try {
+                const response = await fetch('/api/email/generate-email', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        campaign: campaign,
+                        audience: audience,
+                        tone: tone
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success && data.email) {
+                    resultDiv.innerHTML = data.email;
+                } else if (data.message) {
+                    resultDiv.innerHTML = data.message;
+                } else {
+                    resultDiv.innerHTML = JSON.stringify(data, null, 2);
+                }
+            } catch (error) {
+                resultDiv.innerHTML = 'Error: ' + error.message;
+            } finally {
+                loadingDiv.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
